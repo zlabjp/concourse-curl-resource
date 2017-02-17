@@ -1,62 +1,34 @@
+set -e
 
-# Using jq regex so we can support groups
-applyRegex_version() {
-  local regex=$1
-  local file=$2
+exec 3>&1 # make stdout available as fd 3 for the result
+exec 1>&2 # redirect all output to stderr for logging
 
-  jq -n "{
-  version: $(echo $file | jq -R .)
-  }" | jq --arg v "$regex" '.version | capture($v)' | jq -r '.version'
+# in_file_with_version() {
+#   local artifacts_url=$1
+#   local regex="(?<uri>$2)"
+#   local version=$3
+#
+#   result=$(artifactory_files "$artifacts_url" "$regex")
+#   echo $result | jq --arg v "$version" '[foreach .[] as $item ([]; $item ; if $item.version == $v then $item else empty end)]'
+#
+# }
+#
 
-}
-
-# retrieve current from artifactory
-# e.g url=http://your-host-goes-here:8081/artifactory/api/storage/your-path-goes-here
-#     regex=ecd-front-(?<version>.*).tar.gz
-artifactory_current_version() {
-  local artifacts_url=$1
-  local regex=$2
-
-  curl $1 | jq --arg v "$regex" '[.children[].uri | capture($v)]' | jq 'sort_by(.version)' | jq '[.[length-1] | {version: .version}]'
-
-}
-
-# Return all versions
-artifactory_versions() {
-  local artifacts_url=$1
-  local regex=$2
-
-  curl $1 | jq --arg v "$regex" '[.children[].uri | capture($v)]' | jq 'sort_by(.version)' | jq '[.[] | {version: .version}]'
-
-}
-
-# return uri and version of all files
-artifactory_files() {
-  local artifacts_url=$1
-  local regex="(?<uri>$2)"
-
-  curl $1 | jq --arg v "$regex" '[.children[].uri | capture($v)]' | jq 'sort_by(.version)' | jq '[.[] | {uri: .uri, version: .version}]'
-
-}
-
-in_file_with_version() {
-  local artifacts_url=$1
-  local regex="(?<uri>$2)"
-  local version=$3
-
-  result=$(artifactory_files "$artifacts_url" "$regex")
-  echo $result | jq --arg v "$version" '[foreach .[] as $item ([]; $item ; if $item.version == $v then $item else empty end)]'
-
-}
-
-
-# return the list of versions from provided version
+# retrieve current file version
+# e.g. curl -R -I $1
 check_version() {
-  local artifacts_url=$1
-  local regex=$2
-  local version=$3
+  # retrieves HTTP header of file URL response
+  local httpHeader=$(curl -R -I $1 2>&1 | grep 'Last-Modified:')
+  # Checks if field "Last-Modified" exists in HTTP header and transform it into timestamp string
+  # if that field is not present, return current timestamp
+  if [ -z "$httpHeader" ]
+  then
+        # echo "Last-Modified information not returned for targeted file. Using current date's timestamp as version number."
+        local dateString=$(date)
+  else
+        # echo "$httpHeader"
+        local dateString=$(echo "$httpHeader" | sed -e "s/Last-Modified: //" | cut -d',' -f 2)
+  fi
 
-  result=$(artifactory_versions "$artifacts_url" "$regex")  #result=$(curl "$artifacts_url" "$regex")
-  echo $result | jq --arg v "$version" '[foreach .[] as $item ([]; $item ; if $item.version >= $v then $item else empty end)]'
-
+  date +"%Y%m%d%H%S" -d "$dateString"
 }

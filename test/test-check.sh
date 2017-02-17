@@ -3,7 +3,6 @@
 set -e
 
 source $(dirname $0)/helpers.sh
-# resource_dir=$(cd $(dirname $0)/../assets && pwd)
 
 # set FILE_URL_WITH_LAST_MODIFIED_INFO with a URL of a file whose HTTP HEADER info provides a Last-Modified entry
 # to check it do "curl -I -R <url>"
@@ -26,7 +25,11 @@ it_can_get_file_with_last_modified_info() {
 
 it_can_get_file_without_last_modified_info() {
 
-  $resource_dir/check "$FILE_URL_WITHOUT_LAST_MODIFIED_INFO" | tee /dev/stderr
+  jq -n "{
+    source: {
+      url: $(echo $FILE_URL_WITHOUT_LAST_MODIFIED_INFO | jq -R .)
+    }
+  }" | $resource_dir/check "$FILE_URL_WITHOUT_LAST_MODIFIED_INFO" | tee /dev/stderr
 
 }
 

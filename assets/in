@@ -16,69 +16,44 @@ fi
 
 cd $source
 
-payload=$(mktemp $TMPDIR/artifactory-resource-request.XXXXXX)
+payload=$(mktemp $TMPDIR/concoure-curl-resource-request.XXXXXX)
 
 cat > $payload <&0
 
 cat $payload
 
-endpoint=$(jq -r '.source.endpoint // ""' < $payload)
-regex=$(jq -r '.source.regex // ""' < $payload)
-username=$(jq -r '.source.username // ""' < $payload)
-password=$(jq -r '.source.password // ""' < $payload)
+url=$(jq -r '.source.url // ""' < $payload)
+filename=$(jq -r '.source.filename // ""' < $payload)
 skip_ssl_verification=$(jq -r '.source.skip_ssl_verification // ""' < $payload)
 
-repository=$(jq -r '.source.repository // ""' < $payload)
-file=$(jq -r '.params.file // ""' < $payload)
-folder=$(jq -r '.params.folder // ""' < $payload)
-paramRegex=$(jq -r '.params.regex // ""' < $payload)
-
-version=$(jq -r '.version.version // ""' < $payload)
-
-if [ -z "$endpoint" ]; then
-  echo "invalid payload (missing endpoint)"
+if [ -z "$url" ]; then
+  echo "invalid payload (missing url)"
   exit 1
 fi
 
-if [ -z "$repository" ]; then
-  echo "invalid payload (missing repository)"
-  exit 1
+if [ -z "$filename" ]; then
+  filename="file"
 fi
 
-if [ -z "$version" ]; then
-  echo "Missing version"
-  exit 1
-fi
 
 # Building CURL request
-args_url="$endpoint/api/storage$repository$folder"
-
+args_url="$url"
 args_security=
 
-[ -n "$username" ] && args_security="-u $username";
-[ -n "$password" ] && args_security="$args_security:$password";
+# [ -n "$username" ] && args_security="-u $username";
+# [ -n "$password" ] && args_security="$args_security:$password";
 trueValue="true"
 [ -n "$skip_ssl_verification" ] && [ "${skip_ssl_verification,,}" = "${trueValue,,}" ] && args_security="$args_security -k";
-
-if [ -n "$paramRegex" ]; then
-  echo "overwriting source regex"
-  regex=$paramRegex
-fi
 
 final_url=$(echo "$args_security" " $args_url")
 echo $final_url
 
-file_json=$(in_file_with_version "$final_url" "$regex" "$version")
-file=$(echo $file_json | jq -r '.[].uri')
-
-if [ -z "$file" ]; then
-  echo "file for version '$version' not found"
+version=$(check_version "$final_url")
+if [ -z "$version" ]; then
+  echo "Version could not be retrieved"
   exit 1
 fi
 
-args_url="$endpoint$repository/$file"
+curl $args_security "$args_url" "-o" "$filename"
 
-echo $args_security "-O" "$args_url"
-curl $args_security "-O" "$args_url"
-
-echo $file_json | jq '.[].version | {version: {version: .}}' >&3
+echo "{'version': {'version': '$version'}}" >&3

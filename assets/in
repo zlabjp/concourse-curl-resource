@@ -35,7 +35,6 @@ if [ -z "$filename" ]; then
   filename="file"
 fi
 
-
 # Building CURL request
 args_url="$url"
 args_security=
@@ -46,7 +45,6 @@ trueValue="true"
 [ -n "$skip_ssl_verification" ] && [ "${skip_ssl_verification,,}" = "${trueValue,,}" ] && args_security="$args_security -k";
 
 final_url=$(echo "$args_security" " $args_url")
-echo $final_url
 
 version=$(check_version "$final_url")
 if [ -z "$version" ]; then
@@ -56,4 +54,4 @@ fi
 
 curl $args_security "$args_url" "-o" "$filename"
 
-echo "{'version': {'version': '$version'}}" >&3
+jq -n "{ version: {version: $(echo $version | jq .[].version )}}" >&3

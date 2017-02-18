@@ -1,19 +1,5 @@
 set -e
 
-exec 3>&1 # make stdout available as fd 3 for the result
-exec 1>&2 # redirect all output to stderr for logging
-
-# in_file_with_version() {
-#   local artifacts_url=$1
-#   local regex="(?<uri>$2)"
-#   local version=$3
-#
-#   result=$(artifactory_files "$artifacts_url" "$regex")
-#   echo $result | jq --arg v "$version" '[foreach .[] as $item ([]; $item ; if $item.version == $v then $item else empty end)]'
-#
-# }
-#
-
 # retrieve current file version
 # e.g. curl -R -I $1
 check_version() {
@@ -32,5 +18,5 @@ check_version() {
         local dateString=$(date +"$dateVersionFormat" -D %d\ %b\ %Y\ %H:%M:%S\ GMT -d "$tmpDateString")
   fi
 
-  echo "[{\"ref\":\"$dateString\"}]" | jq .
+  echo "{\"version\":\"$dateString\"}" | jq --slurp .
 }

@@ -32,5 +32,5 @@ check_version() {
         local dateString=$(date +"$dateVersionFormat" -D %d\ %b\ %Y\ %H:%M:%S\ GMT -d "$tmpDateString")
   fi
 
-  echo "$dateString"
+  echo "[{\"ref\":\"$dateString\"}]" | jq .
 }

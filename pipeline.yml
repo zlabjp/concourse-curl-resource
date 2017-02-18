@@ -7,13 +7,14 @@ resource_types:
 resources:
 - name: single-file
   type: curl
-  check_every: 1m
   source:
     url: https://s3-us-west-1.amazonaws.com/lsilva-bpws/PCF_usage/pcf-sandbox-usage-from-2016-09-01-to-2016-09-30_1475771124.json
     filename: pcf-sandbox.json
+
 jobs:
 - name: run-and-get-file
   plan:
+  - get: single-file
   - task: run-and-get-file
     config:
       platform: linux
@@ -23,7 +24,7 @@ jobs:
           repository: ubuntu
           tag: "latest"
       inputs:
-      - single-file
+      - name: single-file
       run:
         path: sh
         args:

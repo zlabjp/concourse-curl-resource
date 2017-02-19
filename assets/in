@@ -55,6 +55,6 @@ if [ -z "$version" ]; then
   exit 1
 fi
 
-curl $args_security "$args_url" "-o" "$filename"
+curl "-L" $args_security "$args_url" "-o" "$filename"
 
 jq -n "{ version: {version: $(echo $version | jq .[].version )}}" >&3

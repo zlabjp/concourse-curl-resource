@@ -16,12 +16,20 @@ resources:
   source:
     url: https://raw.githubusercontent.com/pivotalservices/concourse-curl-resource/master/test/data/pivotal-1.0.0.txt
     filename: pivotal-1.0.0.txt
+- name: my-file-requiring-auth
+  type: file-url
+  source:
+    url: https://auth-demo.aerobatic.io/protected-standard
+    filename: auth-request-response.txt
+    username: aerobatic
+    password: aerobatic
 
 jobs:
 - name: run-and-get-files
   plan:
   - get: my-file-with-last-modified-info
   - get: my-file-without-last-modified-info
+  - get: my-file-requiring-auth
   - task: run-and-get-file
     config:
       platform: linux
@@ -33,9 +41,11 @@ jobs:
       inputs:
       - name: my-file-with-last-modified-info
       - name: my-file-without-last-modified-info
+      - name: my-file-requiring-auth
       run:
         path: sh
         args:
         - -exc
         - |
           find .
+          cat ./my-file-requiring-auth/auth-request-response.txt | grep expecting

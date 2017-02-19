@@ -6,9 +6,13 @@ This is a useful resource for pipeline development time, while a required artifa
 
 ## Source Configuration
 
-* `url`: *Required.* The url location of the file. It has to be publicly available, no user authentication supported in v0.0.1.
+* `url`: *Required.* The url location of the file.
 
 * `filename`: *Optional.* The name of the file for the downloaded artifact to be save as. If not provided, the file will be saved using the full url string as its name.
+
+* `username`: *Optional.* Username for accessing an authenticated repository.
+
+* `password`: *Optional.* Password for accessing an authenticated repository.
 
 * `skip_ssl_verification`: *Optional.* Skips ssl verification if defined as `true`. Default is `false`.
 

@@ -13,6 +13,8 @@ export FILE_NAME_1=pcf-sandbox.json
 # to check it do "curl -I -R <url>"
 export FILE_URL_WITHOUT_LAST_MODIFIED_INFO=https://raw.githubusercontent.com/pivotalservices/concourse-curl-resource/master/test/data/pivotal-1.0.0.txt
 export FILE_NAME_2=ivotal-1.0.0.txt
+# set FILE_URL_BASIC_AUTH with a URL of a file that requires basic authentication
+export FILE_URL_BASIC_AUTH=https://auth-demo.aerobatic.io/protected-standard
 
 it_can_get_file_with_date_info() {
   jq -n "{
@@ -24,4 +26,20 @@ it_can_get_file_with_date_info() {
 
 }
 
+it_can_get_file_with_basic_auth() {
+
+  echo "Source=[$src]"
+
+  jq -n "{
+    source: {
+      url: $(echo $FILE_URL_BASIC_AUTH | jq -R .),
+      username: $(echo 'aerobatic' | jq -R .),
+      password: $(echo 'aerobatic' | jq -R .),
+      filename: $(echo 'basicauth.txt' | jq -R .)
+    }
+  }" | $resource_dir/in "$src" | tee /dev/stderr
+
+}
+
 run it_can_get_file_with_date_info
+run it_can_get_file_with_basic_auth

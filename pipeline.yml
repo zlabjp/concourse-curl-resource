@@ -1,21 +1,21 @@
 resource_types:
-- name: curl
+- name: file-url
   type: docker-image
   source:
     repository: pivotalservices/concourse-curl-resource
     tag: latest
 
 resources:
-- name: single-file
-  type: curl
+- name: my-file
+  type: file-url
   source:
-    url: https://s3-us-west-1.amazonaws.com/lsilva-bpws/PCF_usage/pcf-sandbox-usage-from-2016-09-01-to-2016-09-30_1475771124.json
-    filename: pcf-sandbox.json
+    url: https://raw.githubusercontent.com/pivotalservices/concourse-curl-resource/master/test/data/pivotal-1.0.0.txt
+    filename: pivotal-1.0.0.txt
 
 jobs:
 - name: run-and-get-file
   plan:
-  - get: single-file
+  - get: my-file
   - task: run-and-get-file
     config:
       platform: linux
@@ -25,7 +25,7 @@ jobs:
           repository: ubuntu
           tag: "latest"
       inputs:
-      - name: single-file
+      - name: my-file
       run:
         path: sh
         args:

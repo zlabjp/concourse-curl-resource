@@ -1,6 +1,6 @@
-# File URL Resource
+# File Resource
 
-Tracks the update of a single URL-addressable file.
+Tracks the update of a single URL-addressable file. (a.k.a. cURL resource)
 
 This is a useful resource for pipeline development time, while a required artifact is temporarily available from a URL-addressable location, until it is moved to a more robust file management repository such as [git](https://github.com/concourse/git-resource) or [S3](https://github.com/concourse/s3-resource).  
 

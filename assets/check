@@ -12,8 +12,8 @@ payload=$(mktemp $TMPDIR/concoure-curl-resource-request.XXXXXX)
 cat > $payload <&0
 
 url=$(jq -r '.source.url // ""' < $payload)
-# username=$(jq -r '.source.username // ""' < $payload)
-# password=$(jq -r '.source.password // ""' < $payload)
+username=$(jq -r '.source.username // ""' < $payload)
+password=$(jq -r '.source.password // ""' < $payload)
 skip_ssl_verification=$(jq -r '.source.skip_ssl_verification // ""' < $payload)
 
 if [ -z "$url" ]; then
@@ -23,8 +23,8 @@ fi
 
 args_security=
 
-# [ -n "$username" ] && args_security="-u $username";
-# [ -n "$password" ] && args_security="$args_security:$password";
+[ -n "$username" ] && args_security="-u $username";
+[ -n "$username" ] && [ -n "$password" ] && args_security="$args_security:$password";
 trueValue="true"
 [ -n "$skip_ssl_verification" ] && [ "${skip_ssl_verification,,}" = "${trueValue,,}" ] && args_security="$args_security -k";
 

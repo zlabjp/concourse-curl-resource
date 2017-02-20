@@ -39,6 +39,9 @@ it_can_get_file_with_basic_auth() {
     }
   }" | $resource_dir/in "$src" | tee /dev/stderr
 
+  # cat "$src"/basicauth.txt | grep expect 
+  # should return "...Hi, we've been expecting you!..."
+
 }
 
 run it_can_get_file_with_date_info

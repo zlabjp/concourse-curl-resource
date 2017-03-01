@@ -20,8 +20,6 @@ payload=$(mktemp $TMPDIR/concoure-curl-resource-request.XXXXXX)
 
 cat > $payload <&0
 
-cat $payload
-
 url=$(jq -r '.source.url // ""' < $payload)
 filename=$(jq -r '.source.filename // ""' < $payload)
 skip_ssl_verification=$(jq -r '.source.skip_ssl_verification // ""' < $payload)

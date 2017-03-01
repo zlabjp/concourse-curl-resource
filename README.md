@@ -2,7 +2,7 @@
 
 Tracks the update of a single URL-addressable file.
 
-This is a useful resource for pipeline development time, while a required artifact is temporarily available from a URL-addressable location, until it is moved to a more robust file management repository such as [git](https://github.com/concourse/git-resource) or [S3](https://github.com/concourse/s3-resource).  
+This is a useful resource for pipeline development time, while a required artifact is available only from a URL-addressable location and until it is moved to a file management repository such as [git](https://github.com/concourse/git-resource) or [S3](https://github.com/concourse/s3-resource).  
 
 ## Source Configuration
 
@@ -56,5 +56,3 @@ Downloads the latest version of the file issuing a `curl` command under-the-cove
 
 
 ### `out`: Not supported.
-
-Write actions are not supported by this resource at this moment.

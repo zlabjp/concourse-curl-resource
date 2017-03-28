@@ -32,8 +32,8 @@ resources:
 - name: my-file
   type: file-url
   source:
-    url: https://raw.githubusercontent.com/pivotalservices/concourse-curl-resource/master/test/data/pivotal-1.0.0.txt  
-    filename: pivotal-1.0.0.txt  
+    url: http://www-us.apache.org/dist/lucene/java/5.5.4/lucene-5.5.4-src.tgz  
+    filename: lucene-5.5.4-src.tgz  
 ```
 
 ## Behavior

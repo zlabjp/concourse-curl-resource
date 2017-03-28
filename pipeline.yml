@@ -9,8 +9,8 @@ resources:
 - name: my-file-with-last-modified-info
   type: file-url
   source:
-    url: https://s3-us-west-1.amazonaws.com/lsilva-bpws/PCF_usage/pcf-sandbox-usage-from-2016-09-01-to-2016-09-30_1475771124.json
-    filename: pcf-sandbox-usage.json
+    url: http://www-us.apache.org/dist/lucene/java/5.5.4/lucene-5.5.4-src.tgz
+    filename: lucene-5.5.4-src.tgz
 - name: my-file-without-last-modified-info
   type: file-url
   source:
